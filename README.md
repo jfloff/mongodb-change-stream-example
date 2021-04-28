@@ -5,6 +5,7 @@ This repo is a toy example for Mongo change streams functionality. It is based o
 ## How to run
 
 On one window: `docker-compose up mongo infinite-write`
+
 On another: `docker-compose up change-stream`
 
 ## What does it do
