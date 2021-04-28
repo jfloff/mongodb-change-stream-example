@@ -1,0 +1,7 @@
+FROM python:slim
+
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /usr/bin/
+
+RUN set -ex ;\
+  chmod a+x /usr/bin/wait-for-it.sh ;\
+  pip install pymongo

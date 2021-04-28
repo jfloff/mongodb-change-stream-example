@@ -1,0 +1,25 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:latest
+    command: --bind_ip 0.0.0.0 --replSet rs0
+    ports:
+      - 27017:27017
+
+  infinite-write:
+    build:
+      context: .
+      dockerfile: Dockerfile-python
+    depends_on:
+      - mongo
+    command: 'wait-for-it.sh -t 0 mongo:27017 -- bash -c "python -u /app/infinite_write.py"'
+    volumes:
+      - .:/app
+
+  change-stream:
+    build:
+      context: .
+      dockerfile: Dockerfile-python
+    command: 'python -u /app/change_stream.py'
+    volumes:
+      - .:/app
