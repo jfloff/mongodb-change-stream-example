@@ -1,7 +1,19 @@
 FROM python:slim
 
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /usr/bin/
+RUN set -ex ;\
+    apt-get update && apt-get install -y \
+      iputils-ping \
+      wget \
+      ;\
+    rm -rf /var/lib/apt/lists/*
+
+ENV DOCKERIZE_VERSION v0.6.1
+RUN set -ex ;\
+    wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz ;\
+    tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz ;\
+    rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 RUN set -ex ;\
-  chmod a+x /usr/bin/wait-for-it.sh ;\
-  pip install pymongo
+    pip install \
+      pymongo \
+      ping3

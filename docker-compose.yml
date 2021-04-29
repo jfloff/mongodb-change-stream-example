@@ -1,18 +1,32 @@
 version: '3'
 services:
-  mongo:
+  mongo-us:
     image: mongo:latest
     command: --bind_ip 0.0.0.0 --replSet rs0
     ports:
       - 27017:27017
+
+  mongo-eu:
+    image: mongo:latest
+    command: --bind_ip 0.0.0.0 --replSet rs0
+    ports:
+      - 27018:27017
+
+  mongo-jp:
+    image: mongo:latest
+    command: --bind_ip 0.0.0.0 --replSet rs0
+    ports:
+      - 27019:27017
 
   infinite-write:
     build:
       context: .
       dockerfile: Dockerfile-python
     depends_on:
-      - mongo
-    command: 'wait-for-it.sh -t 0 mongo:27017 -- bash -c "python -u /app/infinite_write.py"'
+      - mongo-us
+      - mongo-eu
+      - mongo-jp
+    command: dockerize -wait tcp://mongo-us:27017 -wait tcp://mongo-eu:27017 -wait tcp://mongo-jp:27017 python -u /app/infinite_write.py mongo-us
     volumes:
       - .:/app
 
@@ -20,6 +34,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-python
-    command: 'python -u /app/change_stream.py'
+    command: 'python -u /app/change_stream.py mongo-jp'
     volumes:
       - .:/app

@@ -1,14 +1,30 @@
-import time
+import sys
 from pymongo import MongoClient, errors
 
-MONGO_HOSTNAME = 'mongo'
-MONGO_PORT = 27017
+MONGO_INSTANCES = [
+  {
+    'hostname': 'mongo-us',
+    'port': 27017,
+  },
+  {
+    'hostname': 'mongo-eu',
+    'port': 27017,
+  },
+  {
+    'hostname': 'mongo-jp',
+    'port': 27017,
+  }
+]
 REPLICASET_NAME = 'rs0'
 DATABASE_NAME = 'demo'
 COLLECTION_NAME = 'stock'
 
+# check if we have a producer as an argument
+# otherwise we choose mongo-us
+mongo_consumer = next(inst for inst in MONGO_INSTANCES if inst['hostname'] == sys.argv[1])
+
 # initiate the connection
-c = MongoClient(MONGO_HOSTNAME, MONGO_PORT, replicaset=REPLICASET_NAME)
+c = MongoClient(mongo_consumer['hostname'], mongo_consumer['port'], replicaset=REPLICASET_NAME)
 db = c.get_database(DATABASE_NAME)
 collection = db.get_collection(COLLECTION_NAME)
 
